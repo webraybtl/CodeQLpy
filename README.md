@@ -8,7 +8,7 @@ CodeQLpy是一款基于CodeQL实现的自动化代码审计工具，目前仅支
 
 ## 安装准备
 
-1、首先安装CodeQL，具体安装方法可以参考https://www.freebuf.com/articles/web/283795.html。注意一定要使用新版本，老版本中有不支持的语法
+1、首先安装CodeQL，具体安装方法可以参考[CodeQL安装](https://www.freebuf.com/articles/web/283795.html)。注意一定要使用新版本，老版本中有不支持的语法
 
 2、python环境依赖，本项目依赖python3.7及以上版本，具体依赖见requirements.txt
 
