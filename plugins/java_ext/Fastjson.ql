@@ -36,4 +36,4 @@ from DataFlow::PathNode source, DataFlow::PathNode sink, FastjsonUnserialize con
 where
   conf.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potential Fastjson Unserialize Vulnerability"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potential Fastjson Unserialize Vulnerability"

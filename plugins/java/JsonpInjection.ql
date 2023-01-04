@@ -202,4 +202,4 @@ where
   conf.hasFlowPath(source, sink) and
   exists(JsonpInjectionFlowConfig jhfc | jhfc.hasFlowTo(sink.getNode()))
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Jsonp response"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Jsonp response"

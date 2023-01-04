@@ -73,4 +73,4 @@ class RegexInjectionConfiguration extends TaintTracking::Configuration {
 from DataFlow::PathNode source, DataFlow::PathNode sink, RegexInjectionConfiguration c
 where c.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "This regular expression injection"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "This regular expression injection"

@@ -26,6 +26,7 @@ if __name__ == "__main__":
     args.add_argument('-t', '--target', type=str, help='Target CodeSource')
     args.add_argument('-c', '--compiled', action="store_true", help='Target CodeSource is compiled')
     args.add_argument('-s', '--skip', action="store_true", help='Skip checking environment')
+    args.add_argument('-v', '--version', type=int, default=8, help='Target Source Code JDK version')
 
     parse_args = args.parse_args()
 
@@ -58,13 +59,11 @@ if __name__ == "__main__":
         if not target_type:
             color_print.error("Target Error")
             sys.exit()
+        version = parse_args.version
+        if version not in [6,7,8,11, ]:
+            version = 8
         # 通过源码创建数据库
-        db_path = createDB(parse_args.target, parse_args.compiled)
-        if not checkDB(db_path):
-            color_print.error("Database Error")
-            sys.exit()
-
-        JavaScan().run(db_path)
+        createDB(parse_args.target, parse_args.compiled, version)
 
 
 

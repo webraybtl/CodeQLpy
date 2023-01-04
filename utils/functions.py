@@ -7,6 +7,7 @@ import sys
 import shutil
 import pathlib
 import zipfile
+import platform
 import subprocess
 
 from utils.log    import log
@@ -63,16 +64,24 @@ def copyFile(srcpath, destpath):
     shutil.copy(srcpath, destpath)
 
 def execute(cmd):
-    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
-    proc.wait()
-    stream_stdout = io.TextIOWrapper(proc.stdout, encoding='utf-8')
-    stream_stderr = io.TextIOWrapper(proc.stderr, encoding='utf-8')
-    str_stdout = stream_stdout.read()
-    if qlConfig("debug").lower() == "on":
-        str_stderr = stream_stderr.read()
-        log.warning(str_stderr)
-    
-    return str_stdout
+    try:
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
+        proc.wait(timeout=10)
+        if platform.system() == "Windows":
+            encoding = "gbk"
+        else:
+            encoding = "utf-8"
+        stream_stdout = io.TextIOWrapper(proc.stdout, encoding=encoding)
+        stream_stderr = io.TextIOWrapper(proc.stderr, encoding=encoding)
+        str_stdout = stream_stdout.read()
+        if qlConfig("debug").lower() == "on":
+            str_stderr = stream_stderr.read()
+            log.warning(str_stderr)
+        
+        return str_stdout
+    except Exception as e:
+        print(e)
+        return 'execute error'
 
 
 def cvsClean(content):
@@ -92,4 +101,13 @@ def execJar(args, version=8):
     exec_str = jdk  + args
     return execute(exec_str)
 
+def checkJar(jarfile):
+    try:
+        f = zipfile.ZipFile(jarfile,'r')
+        for file in f.namelist():
+            if file == "META-INF/" or file == "META-INF\\":
+                return True
+    except:
+        return False
+    return False
     

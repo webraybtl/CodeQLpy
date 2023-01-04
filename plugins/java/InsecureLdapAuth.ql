@@ -196,5 +196,5 @@ where
   exists(BasicAuthFlowConfig bc | bc.hasFlowTo(sink.getNode())) and
   not exists(SslFlowConfig sc | sc.hasFlowTo(sink.getNode()))
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
   "LDAP connection string"

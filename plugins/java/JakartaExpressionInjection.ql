@@ -127,5 +127,5 @@ private class LambdaExpression extends JakartaType {
 from DataFlow::PathNode source, DataFlow::PathNode sink, JakartaExpressionInjectionConfig conf
 where conf.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Jakarta Expression Language injection",
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Jakarta Expression Language injection",
   source.getNode(), "this user input"

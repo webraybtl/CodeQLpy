@@ -65,5 +65,5 @@ class SensitiveGetQueryConfiguration extends TaintTracking::Configuration {
 from DataFlow::PathNode source, DataFlow::PathNode sink, SensitiveGetQueryConfiguration c
 where c.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
   "Uses the GET request method to transmit sensitive information."

@@ -5,6 +5,7 @@ import os
 import sys
 import shutil
 import codeql
+import platform
 import utils.color_print as color_print
 
 from utils.log              import log
@@ -17,7 +18,7 @@ from compiler.clear         import *
 from compiler.maven         import transform
 
 
-def createJar(source, compiled):
+def createJar(source, compiled, version):
     if not compiled:
         log.error("SpringBoot jar project is compiled, using --compiled argument instead.")
         sys.exit()
@@ -45,7 +46,7 @@ def createJar(source, compiled):
             db_name = ".".join(os.path.basename(source).split(".")[:-1])
             db_path = os.path.join(qlConfig("general_dbpath"), db_name)
             
-            log.info(f"arch -x86_64 codeql database create {db_path} --language=java --command='{db_cmd}'")
+            # log.info(f"arch -x86_64 codeql database create {db_path} --language=java --command='{db_cmd}'")
             # 生成数据库，保存在db_path路径
             codeql.Database.create("java", None, compile_cmd, db_path)
             if checkDB(db_path):
@@ -57,7 +58,7 @@ def createJar(source, compiled):
         log.error("Decompile error")
 
 
-def createDir(source, compiled):
+def createDir(source, compiled, version):
     # 处理未编译的源代码，生成数据库
     if not compiled:
         java_files = list(getFilesFromPath(source, "java"))
@@ -104,6 +105,8 @@ def createDir(source, compiled):
             log.info(f"Found {len(jar_files)} jar files to include")
             for jar_file in jar_files:
                 srcpath = str(jar_file)
+                if not checkJar(srcpath):
+                    continue
                 destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
                 copyFile(srcpath, destpath)
 
@@ -120,7 +123,13 @@ def createDir(source, compiled):
         # 添加maven编译源码的命令
         db_cmd = generate("mvn clean package -DskipTests; " + compile_cmd, qlConfig("decode_savedir"))
 
-        log.info(f"arch -x86_64 codeql database create {db_path} --language=java --command='{db_cmd}'")
+        ql_cmd = f"codeql database create {db_path} --language=java --command='{db_cmd}' --overwrite"
+        if platform.system() == "Darwin":
+            ql_cmd = "arch -x86_64 " + ql_cmd
+        color_print.debug("Using the following command to create database")
+        color_print.info(ql_cmd)
+        sys.exit()
+
         # 生成数据库，保存在db_path路径
         codeql.Database.create("java", None, db_cmd, db_path)
         if checkDB(db_path):
@@ -130,6 +139,9 @@ def createDir(source, compiled):
 
     # 处理已编译的源码，一般为class和jar
     else:
+        # 对源码中不兼容数据进行清洗
+        clearSource(source)
+
         java_files = list(getFilesFromPath(source, "java"))
         jsp_files  = list(getFilesFromPath(source, "jsp"))
         jar_files  = list(getFilesFromPath(source, "jar"))
@@ -149,17 +161,14 @@ def createDir(source, compiled):
         if len(jar_files) > 0:
             for jar_file in jar_files:
                 srcpath = str(jar_file)
+                if not checkJar(srcpath):
+                    continue
                 destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
                 copyFile(srcpath, destpath)
 
         # 处理jsp文件，反编译成java文件，并保存在待编译目录
         if len(jsp_files) > 0:
             log.info(f"Found {len(jsp_files)} jsp files to decode")
-            i = 0
-            # for jsp_file in jsp_files:
-            #     i += 1
-            #     log.info(f"Decoded jsp files {i}/{len(jsp_files)}, in processing.")
-            #     jspDecompile(jsp_file, source)
             jspDecompileFiles(jsp_files, source)
             convert_jsp_files = list(getFilesFromPath(os.path.join(qlConfig("decode_savedir"), "org/apache/jsp"), "java"))
             log.warning(f"Decode jsp file {len(convert_jsp_files)}/{len(jsp_files)} success ")
@@ -194,7 +203,7 @@ def createDir(source, compiled):
         # 对反编译中异常的java文件进行自动修复
         clearJava(qlConfig("decode_savedir"))
 
-        compile_cmd = ecjcompileE(qlConfig("decode_savedir"))
+        compile_cmd = ecjcompileE(qlConfig("decode_savedir"), version)
         source_split = source.replace("\\", "/").split("/")
         db_name = ""
         for i in range(len(source_split)):
@@ -209,7 +218,14 @@ def createDir(source, compiled):
         db_cmd = generate(compile_cmd, qlConfig("decode_savedir"))
         # color_print.debug("About waiting {} hours for compiling files".format(round(len(compile_cmd.split("\n")) * 20 / 3600.0, 2)))
         # 生成数据库，保存在db_path路径
-        log.info(f"arch -x86_64 codeql database create {db_path} --language=java --command='{db_cmd}'")
+
+        ql_cmd = f"codeql database create {db_path} --language=java --command='{db_cmd}' --overwrite"
+        if platform.system() == "Darwin":
+            ql_cmd = "arch -x86_64 " + ql_cmd
+        color_print.debug("Using the following command to create database")
+        color_print.info(ql_cmd)
+        sys.exit()
+
         codeql.Database.create("java", None, db_cmd, db_path)
         if checkDB(db_path):
             return db_path
@@ -217,7 +233,7 @@ def createDir(source, compiled):
             log.error("Generate database error.")
 
 
-def createWar(source, compiled):
+def createWar(source, compiled, version):
     if not compiled:
         log.error("SpringMVC war project is compiled, using --compiled argument instead.")
         sys.exit()
@@ -243,6 +259,8 @@ def createWar(source, compiled):
     if len(jar_files) > 0:
         for jar_file in jar_files:
             srcpath = str(jar_file)
+            if not checkJar(srcpath):
+                continue
             destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
             copyFile(srcpath, destpath)
 
@@ -288,7 +306,7 @@ def createWar(source, compiled):
     # 对反编译中异常的java文件进行自动修复
     clearJava(qlConfig("decode_savedir"))
 
-    compile_cmd = ecjcompileE(qlConfig("decode_savedir"))
+    compile_cmd = ecjcompileE(qlConfig("decode_savedir"), version)
     source_split = source.replace("\\", "/").split("/")
     db_name = ""
     for i in range(len(source_split)):
@@ -303,7 +321,14 @@ def createWar(source, compiled):
     db_cmd = generate(compile_cmd, qlConfig("decode_savedir"))
     # color_print.debug("About waiting {} hours for compiling files".format(round(len(compile_cmd.split("\n")) * 20 / 3600.0, 2)))
     # 生成数据库，保存在db_path路径
-    log.info(f"arch -x86_64 codeql database create {db_path} --language=java --command='{db_cmd}'")
+    ql_cmd = f"codeql database create {db_path} --language=java --command='{db_cmd}' --overwrite"
+    if platform.system() == "Darwin":
+        ql_cmd = "arch -x86_64 " + ql_cmd
+    color_print.debug("Using the following command to create database")
+    color_print.info(ql_cmd)
+    sys.exit()
+
+    # 由于自动生成数据库时间太长，看不到中间输出结果，不再提供自动生成数据库的功能
     codeql.Database.create("java", None, db_cmd, db_path)
     if checkDB(db_path):
         return db_path
@@ -312,7 +337,7 @@ def createWar(source, compiled):
 
 
 # 根据不同类型的源码进行处理
-def createDB(source, compiled):
+def createDB(source, compiled, version):
     # 清除历史保存的源码数据
     for path in os.listdir(qlConfig("decode_savedir")):
         c_path = os.path.join(qlConfig("decode_savedir"), path)
@@ -324,14 +349,14 @@ def createDB(source, compiled):
     # 开始创建数据库
     if os.path.isfile(source):
         if source.endswith(".jar"):
-            return createJar(source, compiled)
+            return createJar(source, compiled, version)
         elif source.endswith(".war"):
-            return createWar(source, compiled)
+            return createWar(source, compiled, version)
         else:
             log.error("Unsupport source code")
             sys.exit()
     elif os.path.isdir(source):
-        return createDir(source, compiled)
+        return createDir(source, compiled, version)
     else:
         log.error("SourceCode is not exists")
         sys.exit()

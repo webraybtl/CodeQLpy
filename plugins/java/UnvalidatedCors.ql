@@ -73,4 +73,4 @@ from
   CorsSourceReachesCheckConfig sanconf
 where conf.hasFlowPath(source, sink) and not sanconf.hasFlow(source.getNode(), _)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "CORS header is being set using user controlled value "
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "CORS header is being set using user controlled value "

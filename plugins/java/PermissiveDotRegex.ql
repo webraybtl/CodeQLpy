@@ -276,4 +276,4 @@ private class PatternMatcherRegexSink extends MatchRegexSink {
 from DataFlow::PathNode source, DataFlow::PathNode sink, MatchRegexConfiguration conf
 where conf.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potentially authentication bypass"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potentially authentication bypass"

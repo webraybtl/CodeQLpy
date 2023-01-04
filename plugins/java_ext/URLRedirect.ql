@@ -13,7 +13,7 @@ class URLRedirectSink extends DataFlow::Node {
     }
 }
 
-class URLRedirectSanitizer extends DataFlow::Node { //定义过滤类
+class URLRedirectSanitizer extends DataFlow::Node {
     URLRedirectSanitizer() {
       this.toString().indexOf("+") > 0
     }
@@ -34,4 +34,4 @@ from DataFlow::PathNode source, DataFlow::PathNode sink, URLRedirectConfig conf
 where
   conf.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potential URLRedirect Vulnerability"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potential URLRedirect Vulnerability"

@@ -42,4 +42,4 @@ from DataFlow::PathNode source, DataFlow::PathNode sink, SQLIConfig conf
 where
   conf.hasFlowPath(source, sink)
 select source,source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink,source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potential SQLI Vulnerability"
+      sink,sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Potential SQLI Vulnerability"

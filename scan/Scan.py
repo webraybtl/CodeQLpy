@@ -23,9 +23,12 @@ class Scan():
     # 获取插件对应的ql查询语句
     @staticmethod
     def getQuery(plugin_name):
-        if not plugin_name.endswith(".ql"):
-            plugin_name += ".ql"
-        return readFile(plugin_name)
+        try:
+            if not plugin_name.endswith(".ql"):
+                plugin_name += ".ql"
+            return readFile(plugin_name)
+        except Exception as e:
+            log.error("Plugin Error, do not use chinese words.")
 
     # 获取目录下的插件列表
     @staticmethod

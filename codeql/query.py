@@ -64,7 +64,7 @@ class Query(object):
         # if not os.path.exists(output):
         #     with open(output, 'w') as w:
         #         w.write("");
-        output = qlConfig('bqrsfile')
+        output = os.path.join(qlConfig('qlpath'), "query.bqrs")
         # Obtain actual path to database
         if type(database) == codeql.Database:
             database = database.path

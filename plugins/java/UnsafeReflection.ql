@@ -141,4 +141,4 @@ where
   sink.getNode().asExpr() = reflectiveCall.getQualifier() and
   conf.hasFlowToExpr(getAMethodArgument(reflectiveCall))
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "Unsafe reflection"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "Unsafe reflection"

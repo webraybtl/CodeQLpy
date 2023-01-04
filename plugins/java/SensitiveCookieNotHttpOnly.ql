@@ -197,4 +197,4 @@ class MissingHttpOnlyConfiguration extends TaintTracking::Configuration {
 from DataFlow::PathNode source, DataFlow::PathNode sink, MissingHttpOnlyConfiguration c
 where c.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "Doesn't have the HttpOnly flag set."
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "Doesn't have the HttpOnly flag set."

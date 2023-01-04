@@ -23,11 +23,11 @@ def filterPackage(java_path):
 
 # 为了提高效率，只对包含白名单的类进行编译，白名单一般是WEB文件
 def filterJava(java_path):
-    whilte_javas = ["@Controller", "@RequestMapping", "@ResponseBody", "@WebFilter", "@RestController", "@GetMapping", \
-    "@PostMapping", "HttpServlet", "ServletRequest",] 
+    whilte_javas = [b"@Controller", b"@RequestMapping", b"@ResponseBody", b"@WebFilter", b"@RestController", b"@GetMapping", \
+    b"@PostMapping", b"HttpServlet", b"ServletRequest",] 
     if not os.path.isfile(java_path):
         return False
-    with open(java_path, 'r') as r:
+    with open(java_path, 'rb') as r:
         content = r.read()
         for whilte_java in whilte_javas:
             if whilte_java in content:
@@ -40,9 +40,9 @@ def filterJava(java_path):
 def filterClass(java_path):
     if not os.path.isfile(java_path):
         return False
-    with open(java_path, 'r') as r:
+    with open(java_path, 'rb') as r:
         content = r.read()
-        if content.count(" class ") >= 2 or " abstract class " in content:
+        if content.count(b" class ") >= 2 or b" abstract class " in content:
             return False
     return True
 
@@ -62,7 +62,7 @@ def generate(command, save_path):
         with open(cmd_path, "w+") as f:
             f.write("@echo off\r\n")
             f.write(command)
-        return "cmd /c "+ cmd_path
+        return cmd_path
 
     log.error("Unknown System.")
     return False
@@ -71,9 +71,9 @@ def generate(command, save_path):
 def getSourcePath(source_path):
     java_files = getFilesFromPath(source_path, "java")
     for java_file in java_files:
-        with open(java_file, 'r') as r:
+        with open(java_file, 'rb') as r:
             content = r.read()
-            for packname in re.compile(r"package\s+([a-zA-Z0-9._\-]+);").findall(content):
+            for packname in re.compile(rb"package\s+([a-zA-Z0-9._\-]+);").findall(content):
                 java_file = str(java_file)
                 pack_loc = java_file.index(packname.replace(".", "/"))
                 return java_file[:pack_loc]
@@ -109,7 +109,7 @@ def ecjcompile(save_path, source_path):
     return compile_cmd
 
 # 对反编译的源码进行整理，得到编译的命令
-def ecjcompileE(save_path):
+def ecjcompileE(save_path, target_version):
     ecj_path = qlConfig("ecj_tool")
     save_path = os.path.abspath(save_path)
     # 提取代码中所有的.java文件，后续会对.java文件进行编译
@@ -130,10 +130,14 @@ def ecjcompileE(save_path):
                 if java_path not in all_java_files:
                     f.write(str(java_path) + "\n")
                     all_java_files.append(java_path)
-    
+
     jar_args = " "
     if os.path.isdir(os.path.join(save_path, "lib")):
-        jar_args += " -extdirs " + os.path.join(save_path, "lib")
+        if platform.system() == "Windows":
+            split_quote = ";"
+        else:
+            split_quote = ":"
+        jar_args += " -extdirs \"{}{}{}\"".format(os.path.join(save_path, "lib"), split_quote, "lib/java{}_lib".format(target_version))
 
     if os.path.isdir(os.path.join(save_path, "classes")):
         jar_args += " -sourcepath " + os.path.join(save_path, "classes")
