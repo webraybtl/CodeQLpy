@@ -53,5 +53,5 @@ where
   sink.getNode().asExpr() = call.getQualifier() and
   any(RemoteUrlToOpenStreamFlowConfig c).hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
   "URL on which openStream is called may have been constructed from remote source."

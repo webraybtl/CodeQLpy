@@ -75,4 +75,4 @@ where
   cfg.isSource(src) and
   not cfg.hasFlow(src, _) and
   not isSafeJxBrowserVersion()
-select src, "This JxBrowser instance may not check HTTPS certificates."
+select "","","","","",src, "This JxBrowser instance may not check HTTPS certificates."

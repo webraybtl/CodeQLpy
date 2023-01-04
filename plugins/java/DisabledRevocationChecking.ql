@@ -66,4 +66,4 @@ class PKIXParameters extends RefType {
 from DataFlow::PathNode source, DataFlow::PathNode sink, DisabledRevocationCheckingConfig config
 where config.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "This disables revocation checking."
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "This disables revocation checking."

@@ -96,4 +96,4 @@ where
   hasConfidentialEndPointExposed(pom, ap) and
   d = pom.getADependency() and
   d.getArtifact().getValue() = "spring-boot-starter-actuator"
-select d, "Insecure configuration of Spring Boot Actuator exposes sensitive endpoints."
+select "","","","","",d, "Insecure configuration of Spring Boot Actuator exposes sensitive endpoints."

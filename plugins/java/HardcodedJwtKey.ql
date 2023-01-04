@@ -148,4 +148,4 @@ private class VerificationFlowStep extends SummaryModelCsv {
 from DataFlow::PathNode source, DataFlow::PathNode sink, HardcodedJwtKeyConfiguration cfg
 where cfg.hasFlowPath(source, sink)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "HardcodedJwtKey"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "HardcodedJwtKey"

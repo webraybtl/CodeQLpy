@@ -13,4 +13,4 @@ predicate isNonProdCredentials(CredentialsConfig cc) {
 
 from CredentialsConfig cc
 where not isNonProdCredentials(cc)
-select cc, "CredentialsInPropertiesFile"
+select "","","","","",cc, "CredentialsInPropertiesFile"

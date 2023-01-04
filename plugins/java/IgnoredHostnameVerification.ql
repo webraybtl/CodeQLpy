@@ -15,4 +15,4 @@ private class HostnameVerificationCall extends MethodAccess {
 
 from HostnameVerificationCall verification
 where verification.isIgnored()
-select verification, "Ignored result of hostname verification."
+select "","","","","",verification, "Ignored result of hostname verification."

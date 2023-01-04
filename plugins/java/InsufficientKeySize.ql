@@ -140,4 +140,4 @@ where
   hasShortDsaKeyPair(e, msg) or
   hasShortRsaKeyPair(e, msg) or
   hasShortECKeyPair(e, msg)
-select e, msg
+select "","","","","",e, msg

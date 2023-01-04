@@ -159,4 +159,4 @@ class RegistryRequestMatchersCall extends MethodAccess {
 
 from PermitAllCall permitAllCall
 where permitAllCall.permitsSpringBootActuators()
-select permitAllCall, "Unauthenticated access to Spring Boot actuator is allowed."
+select "","","","","",permitAllCall, "Unauthenticated access to Spring Boot actuator is allowed."

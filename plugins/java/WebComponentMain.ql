@@ -59,4 +59,4 @@ class WebComponentMainMethod extends Method {
 }
 
 from WebComponentMainMethod sm
-select sm, "Web application has a main method."
+select "","","","","",sm, "Web application has a main method."

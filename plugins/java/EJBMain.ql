@@ -28,4 +28,4 @@ class EnterpriseBeanMainMethod extends Method {
 }
 
 from EnterpriseBeanMainMethod sm
-select sm, "Java EE application has a main method."
+select "","","","","",sm, "Java EE application has a main method."

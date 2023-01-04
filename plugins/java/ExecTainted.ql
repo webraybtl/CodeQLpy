@@ -26,4 +26,4 @@ private class ChannelExecSetCommandMethod extends Method, ExecCallable {
 from DataFlow::PathNode source, DataFlow::PathNode sink, ArgumentToExec execArg
 where execTainted(source, sink, execArg)
 select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),source.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "Exec Tainted"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(),  "Exec Tainted"

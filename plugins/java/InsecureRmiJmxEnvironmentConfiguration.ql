@@ -77,4 +77,4 @@ where
   (isRmiOrJmxServerCreateConstructor(c.getCallee()) or isRmiOrJmxServerCreateMethod(c.getCallee())) and
   envArg = c.getArgument(1) and
   not any(SafeFlow conf).hasFlowToExpr(envArg)
-select c, getRmiResult(envArg), envArg, envArg.toString()
+select "","","","","",c, getRmiResult(envArg), envArg, envArg.toString()

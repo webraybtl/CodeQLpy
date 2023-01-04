@@ -126,6 +126,13 @@ def ecjcompileE(save_path, target_version):
 
         for java_path in pathlib.Path(save_path).glob('classes/**/*.java'):
             if filterPackage(java_path) and filterClass(java_path):
+                if filterJava(java_path):
+                    if java_path not in all_java_files:
+                        f.write(str(java_path) + "\n")
+                        all_java_files.append(java_path)
+
+        for java_path in pathlib.Path(save_path).glob('classes/**/*.java'):
+            if filterPackage(java_path) and filterClass(java_path):
                 # if filterJava(java_path) and java_path not in all_java_files:
                 if java_path not in all_java_files:
                     f.write(str(java_path) + "\n")

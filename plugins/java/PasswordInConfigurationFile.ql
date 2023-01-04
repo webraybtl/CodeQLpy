@@ -36,4 +36,4 @@ where
   )
   or
   hasEmbeddedPassword(nameAttr.getValue().trim()) // Attribute value matches password pattern
-select nameAttr, "Avoid plaintext passwords in configuration files."
+select "","","","","",nameAttr, "Avoid plaintext passwords in configuration files."
