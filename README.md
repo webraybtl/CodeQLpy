@@ -65,13 +65,13 @@ python3 main.py -t /Users/xxx/Downloads/OAapp/ -c
 mac命令如下
 
 ```
-arch -x86_64 codeql database create out/database/OAapp --language=java --command='/bin/bash -c /Users/xxx/CodeQLpy/out/decode/run.sh' --overwrite
+arch -x86_64 codeql database create out/database/OAapp --language=java --command="/bin/bash -c /Users/xxx/CodeQLpy/out/decode/run.sh" --overwrite
 ```
 
 windows命令如下
 
 ```
-codeql database create out/database/OAapp --language=java --command='run.cmd' --overwrite
+codeql database create out/database/OAapp --language=java --command="run.cmd" --overwrite
 ```
 
 **Step3，代码审计**

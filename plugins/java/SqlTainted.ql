@@ -5,4 +5,5 @@ import DataFlow::PathGraph
 
 from QueryInjectionSink query, DataFlow::PathNode source, DataFlow::PathNode sink
 where queryTaintedBy(query, source, sink)
-select query, source, sink, "This query depends on a $@.", source.getNode(), "user-provided value"
+select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "This query depends on a $@.", source.getNode(), "user-provided value"

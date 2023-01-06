@@ -123,7 +123,7 @@ def createDir(source, compiled, version):
         # 添加maven编译源码的命令
         db_cmd = generate("mvn clean package -DskipTests; " + compile_cmd, qlConfig("decode_savedir"))
 
-        ql_cmd = f"codeql database create {db_path} --language=java --command='{db_cmd}' --overwrite"
+        ql_cmd = f"codeql database create {db_path} --language=java --command=\"{db_cmd}\" --overwrite"
         if platform.system() == "Darwin":
             ql_cmd = "arch -x86_64 " + ql_cmd
         color_print.debug("Using the following command to create database")
@@ -219,7 +219,7 @@ def createDir(source, compiled, version):
         # color_print.debug("About waiting {} hours for compiling files".format(round(len(compile_cmd.split("\n")) * 20 / 3600.0, 2)))
         # 生成数据库，保存在db_path路径
 
-        ql_cmd = f"codeql database create {db_path} --language=java --command='{db_cmd}' --overwrite"
+        ql_cmd = f"codeql database create {db_path} --language=java --command=\"{db_cmd}\" --overwrite"
         if platform.system() == "Darwin":
             ql_cmd = "arch -x86_64 " + ql_cmd
         color_print.debug("Using the following command to create database")
@@ -321,7 +321,7 @@ def createWar(source, compiled, version):
     db_cmd = generate(compile_cmd, qlConfig("decode_savedir"))
     # color_print.debug("About waiting {} hours for compiling files".format(round(len(compile_cmd.split("\n")) * 20 / 3600.0, 2)))
     # 生成数据库，保存在db_path路径
-    ql_cmd = f"codeql database create {db_path} --language=java --command='{db_cmd}' --overwrite"
+    ql_cmd = f"codeql database create {db_path} --language=java --command=\"{db_cmd}\" --overwrite"
     if platform.system() == "Darwin":
         ql_cmd = "arch -x86_64 " + ql_cmd
     color_print.debug("Using the following command to create database")
