@@ -1,5 +1,4 @@
 import java
-import java
 
 /**
  * Holds if `type` is `RemoteInvocationSerializingExporter`.

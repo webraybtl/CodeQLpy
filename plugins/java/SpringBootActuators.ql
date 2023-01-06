@@ -1,5 +1,4 @@
 import java
-import java
 
 /** The class `org.springframework.security.config.annotation.web.builders.HttpSecurity`. */
 class TypeHttpSecurity extends Class {
