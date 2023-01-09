@@ -21,6 +21,8 @@ def readFile(filepath):
 
 def dirFiles(dirpath):
     ret = []
+    if not os.path.isdir(dirpath):
+        return ret
     for filename in os.listdir(dirpath):
         filepath = os.path.join(dirpath, filename)
         if os.path.isfile(filepath):
