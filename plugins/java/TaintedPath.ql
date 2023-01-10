@@ -88,4 +88,4 @@ private class TaintPreservingUriCtorParam extends Parameter {
  from DataFlow::PathNode source, DataFlow::PathNode sink, TaintedPathConfig conf
  where conf.hasFlowPath(source, sink)
  select source.toString(),source.getNode().getEnclosingCallable(),source.getNode().getEnclosingCallable().getFile().getAbsolutePath(), 
-      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "Possiable FileWrite Vunlerablty"
+      sink.toString(),sink.getNode().getEnclosingCallable(), sink.getNode().getEnclosingCallable().getFile().getAbsolutePath(), "User input into FilePath tainted."

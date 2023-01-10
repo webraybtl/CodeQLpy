@@ -66,11 +66,11 @@ def createDir(source, compiled, version):
         jar_files  = list(getFilesFromPath(source, "jar"))
 
         if len(java_files) <= 0:
-            log.error("SourceCode has not java file, maybe not an uncompiled SourceCode, usng --comopiled argument instead")
+            log.error("SourceCode has not java file, maybe not an uncompiled SourceCode, using --comopiled argument instead")
             sys.exit()
 
         if not os.path.isfile(os.path.join(source, "pom.xml")):
-            log.error("Only support maven project with pom.xml, check your SourceCode")
+            log.error("Only support maven project with pom.xml, check your SourceCode. Or using --compiled argument instead")
             sys.exit()
 
         # 处理jsp文件，反编译成java文件，并保存在待编译目录
@@ -82,6 +82,7 @@ def createDir(source, compiled, version):
             #     log.info(f"Decoded jsp files {i}/{len(jsp_files)}, in processing.")
             #     jspDecompile(jsp_file, source)
             # jspDecompileFiles(jsp_files, source)
+            jspDecompileFiles(jsp_files, source)
 
             convert_jsp_files = []
             for java_file in list(getFilesFromPath(qlConfig("decode_savedir"), "java")):

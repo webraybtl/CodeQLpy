@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys,time
+import sys,time,re
 from concurrent.futures import ThreadPoolExecutor as Pool
 
 from utils.option       import qlConfig
@@ -51,7 +51,7 @@ def jspDecompile(filepath, webroot, number):
     filepath = str(filepath)
     filename = filepath[len(webroot):]
     print("processing {}".format(number))
-    args = f" -jar {toolpath} {webroot} {filename} {decompile_dir}"
+    args = f" -jar {toolpath} \"{webroot}\" \"{filename}\" {decompile_dir}"
     execJar(args, 11)
 
 
