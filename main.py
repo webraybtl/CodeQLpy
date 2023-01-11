@@ -27,6 +27,7 @@ if __name__ == "__main__":
     args.add_argument('-c', '--compiled', action="store_true", help='Target CodeSource is compiled')
     args.add_argument('-s', '--skip', action="store_true", help='Skip checking environment')
     args.add_argument('-v', '--version', type=int, default=8, help='Target Source Code JDK version')
+    args.add_argument('-j', '--jar', type=str, default="", help='Additional jar path, eg: oa1.jar,oa2.jar')
 
     parse_args = args.parse_args()
 
@@ -55,6 +56,10 @@ if __name__ == "__main__":
         JavaScan().run(parse_args.database)
     else:
         # 通过源代码进行扫描
+        if " " in parse_args.target.strip():
+            color_print.error("Target path does not allow blank space")
+            sys.exit()
+
         target_type = checkTarget(parse_args.target)
         if not target_type:
             color_print.error("Target Error")
@@ -63,7 +68,7 @@ if __name__ == "__main__":
         if version not in [6,7,8,11, ]:
             version = 8
         # 通过源码创建数据库
-        createDB(parse_args.target, parse_args.compiled, version)
+        createDB(parse_args.target, parse_args.compiled, version, parse_args.jar)
 
 
 
