@@ -6,7 +6,7 @@ CodeQLpy是一款基于CodeQL实现的自动化代码审计工具，目前仅支
 
 支持对多种不同类型的java代码进行代码审计，包括jsp文件、SpringMVC的war包、SpringBoot的jar包、maven源代码。
 
-![image-20230111103754888](/Users/pang0lin/Library/Application Support/typora-user-images/image-20230111103754888.png)
+![image-20230111103754888](imgs/help.png)
 
 -d: 指定待扫描的数据库，一般用于step3
 
