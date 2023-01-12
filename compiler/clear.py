@@ -46,7 +46,7 @@ def repairNoneDeclare(target_dir):
 
 # 修复编码问题导致的编译异常
 def clearCodingError(target_dir):
-    
+    pass
 
 def clearTLD(target_dir):
     # 老版本的代码中出现的tld引用在新版中不支持，需要去除tld引入
