@@ -116,18 +116,18 @@ def ecjcompileE(save_path, target_version):
     # 优先处理jsp文件反编译的.java文件
     all_java_files = []
     with open("{}/file.txt".format(save_path), "w+") as f:
+        for java_path in pathlib.Path(save_path).glob('classes/**/*.java'):
+            if filterPackage(java_path) and filterClass(java_path):
+                if filterJava(java_path):
+                    if java_path not in all_java_files:
+                        f.write(str(java_path) + "\n")
+                        all_java_files.append(java_path)
+
         if os.path.isdir(os.path.join(save_path, "org/apache/jsp")):
             for java_path in pathlib.Path(os.path.join(save_path, "org/apache/jsp")).glob('**/*.java'):
                 # if filterPackage(java_path) and filterClass(java_path):
                 if filterPackage(java_path):
                     if filterJava(java_path) and java_path not in all_java_files:
-                        f.write(str(java_path) + "\n")
-                        all_java_files.append(java_path)
-
-        for java_path in pathlib.Path(save_path).glob('classes/**/*.java'):
-            if filterPackage(java_path) and filterClass(java_path):
-                if filterJava(java_path):
-                    if java_path not in all_java_files:
                         f.write(str(java_path) + "\n")
                         all_java_files.append(java_path)
 

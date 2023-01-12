@@ -44,6 +44,10 @@ def repairNoneDeclare(target_dir):
             with open(java_file, 'wb') as w:
                 w.write(content)
 
+# 修复编码问题导致的编译异常
+def clearCodingError(target_dir):
+    
+
 def clearTLD(target_dir):
     # 老版本的代码中出现的tld引用在新版中不支持，需要去除tld引入
     # <%@ taglib uri="/WEB-INF/tags/convert.tld" prefix="f"%>

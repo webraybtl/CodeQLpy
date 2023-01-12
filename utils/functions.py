@@ -3,7 +3,6 @@
 
 import os
 import io
-import re
 import sys
 import shutil
 import pathlib
@@ -22,8 +21,6 @@ def readFile(filepath):
 
 def dirFiles(dirpath):
     ret = []
-    if not os.path.isdir(dirpath):
-        return ret
     for filename in os.listdir(dirpath):
         filepath = os.path.join(dirpath, filename)
         if os.path.isfile(filepath):
@@ -66,24 +63,10 @@ def copyFile(srcpath, destpath):
         return False
     shutil.copy(srcpath, destpath)
 
-def copyJavaFile(srcpath, destpath):
-    if srcpath == destpath:
-        return False
-    package_name = b""
-    destfilepath = destpath
-    with open(srcpath, 'rb') as r:
-        content = r.read()
-        for package in re.compile(rb"package\s+([\w\.]+);").findall(content):
-            package_name = package
-        if package_name != b"":
-            for pack_path in package_name.split(b"."):
-                destfilepath = os.path.join(destfilepath, bytes.decode(pack_path))
-    copyFile(srcpath, os.path.join(destfilepath, os.path.basename(srcpath)))
-
 def execute(cmd):
     try:
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
-        proc.wait(timeout=120)
+        proc.wait(timeout=30)
         if platform.system() == "Windows":
             encoding = "gbk"
         else:
@@ -122,7 +105,7 @@ def checkJar(jarfile):
     try:
         f = zipfile.ZipFile(jarfile,'r')
         for file in f.namelist():
-            if file == "META-INF/" or file == "META-INF\\":
+            if "META-INF/" in file or "META-INF\\" in file:
                 return True
     except:
         return False
