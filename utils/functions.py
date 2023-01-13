@@ -63,6 +63,21 @@ def copyFile(srcpath, destpath):
         return False
     shutil.copy(srcpath, destpath)
 
+def copyJavaFile(srcpath, destpath):
+    if srcpath == destpath:
+        return False
+    package_name = b""
+    destfilepath = destpath
+    with open(srcpath, 'rb') as r:
+        content = r.read()
+        for package in re.compile(rb"package\s+([\w\.]+);").findall(content):
+            package_name = package
+        if package_name != b"":
+            for pack_path in package_name.split(b"."):
+                destfilepath = os.path.join(destfilepath, bytes.decode(pack_path))
+    copyFile(srcpath, os.path.join(destfilepath, os.path.basename(srcpath)))
+
+
 def execute(cmd):
     try:
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
