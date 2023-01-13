@@ -3,6 +3,7 @@
 
 import os
 import io
+import re
 import sys
 import shutil
 import pathlib
