@@ -112,3 +112,5 @@ lgtm要求分析的源码一定是编译前的源码，而且其包含的插件�
 ## 案例
 
 案例一，[javasec测试用例](https://github.com/webraybtl/StudyCodeQLpy/tree/main/javasec_demo)
+案例一，[若依RuoYi测试用例](https://github.com/webraybtl/StudyCodeQLpy/tree/main/ruoyi_demo)
+案例一，[SpringMVC测试用例](https://github.com/webraybtl/StudyCodeQLpy/tree/main/springmvc_demo)
