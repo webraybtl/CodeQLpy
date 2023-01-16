@@ -75,7 +75,7 @@ def getSourcePath(source_path):
             content = r.read()
             for packname in re.compile(rb"package\s+([a-zA-Z0-9._\-]+);").findall(content):
                 java_file = str(java_file)
-                pack_loc = java_file.index(packname.replace(".", "/"))
+                pack_loc = java_file.index(packname.replace(b".", b"/").decode("utf-8"))
                 return java_file[:pack_loc]
 
     return source_path
