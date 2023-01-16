@@ -31,6 +31,7 @@ def createJar(source, compiled, version):
     if os.path.isdir(source_path):
         java_files = list(getFilesFromPath(source_path, "java"))
         class_files = list(getFilesFromPath(source_path, "class"))
+        jar_files  = list(getFilesFromPath(source_path, "jar"))
 
         if len(java_files) <= 0:
             log.error("Auto decompiler error, no java file found.")
@@ -42,6 +43,22 @@ def createJar(source, compiled, version):
         if len(java_files) > 0:
             for java_file in java_files:
                 copyJavaFile(java_file, os.path.join(qlConfig("decode_savedir"), "classes"))
+
+        for spring_boot_jar in dirFiles(qlConfig("spring_boot_jar")):
+            srcpath = os.path.join(qlConfig("spring_boot_jar"), spring_boot_jar)
+            destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath)) 
+            copyFile(srcpath, destpath)
+
+        # 处理本身依赖的jar包
+        if len(jar_files) > 0:
+            log.info(f"Found {len(jar_files)} jar files to include")
+            for jar_file in jar_files:
+                srcpath = str(jar_file)
+                if not checkJar(srcpath):
+                    continue
+                destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
+                copyFile(srcpath, destpath)
+
         # 通过ecj对反编译之后的代码进行编译
         compile_cmd = ecjcompileE(qlConfig("decode_savedir"), version)
         db_name = ".".join(os.path.basename(source).split(".")[:-1])

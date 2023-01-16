@@ -2,4 +2,4 @@
 /out
 /__pycache__
 /test.py
-/config/config.ini
+*ini
