@@ -148,7 +148,7 @@ def createDir(source, compiled, version, jars):
         # 添加maven编译源码的命令
         db_cmd = generate("mvn clean package -DskipTests -f {}; ".format(os.path.join(source, "pom.xml")) + compile_cmd, qlConfig("decode_savedir"))
 
-        ql_cmd = f"codeql database create {db_path} --language=java --command=\"{db_cmd}\" --overwrite"
+        ql_cmd = f"codeql database create {db_path} --language=java --source-root=\"{source}\" --command=\"{db_cmd}\" --overwrite"
         if platform.system() == "Darwin":
             ql_cmd = "arch -x86_64 " + ql_cmd
         color_print.debug("Using the following command to create database")
