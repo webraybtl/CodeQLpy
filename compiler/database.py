@@ -303,7 +303,7 @@ def createWar(source, compiled, version, jars):
         #     i += 1
         #     log.info(f"Decoded jsp files {i}/{len(jsp_files)}, in processing.")
         #     jspDecompile(jsp_file, source)
-        jspDecompileFiles(jsp_files, qlConfig("decode_savedir"))
+        jspDecompileFiles(jsp_files, source_path)
         convert_jsp_files = list(getFilesFromPath(os.path.join(qlConfig("decode_savedir"), "org/apache/jsp"), "java"))
         log.warning(f"Decode jsp file {len(convert_jsp_files)}/{len(jsp_files)} success ")
         if len(convert_jsp_files) <= 0:

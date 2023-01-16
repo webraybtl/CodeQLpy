@@ -44,6 +44,7 @@ jd_decode_tool  = lib/jd-cli.jar
 jsp_decode_tool = lib/jsp2class.jar
 ecj_tool = lib/ecj-4.6.1.jar
 tomcat_jar = lib/tomcat_lib
+spring_boot_jar = lib/spring_boot_lib
 decode_savedir = out/decode/
 general_dbpath = out/database/
 maven_savedir  = out/mvn/
