@@ -146,7 +146,11 @@ def createDir(source, compiled, version, jars):
         db_path = os.path.join(qlConfig("general_dbpath"), db_name)
 
         # 添加maven编译源码的命令
-        db_cmd = generate("mvn clean package -DskipTests -f {}; ".format(os.path.join(source, "pom.xml")) + compile_cmd, qlConfig("decode_savedir"))
+        if platform.system() == "Windows":
+            split_quote = "\r\n"
+        else:
+            split_quote = ";"
+        db_cmd = generate("mvn clean package -DskipTests -f {}{} ".format(os.path.join(source, "pom.xml"), split_quote) + compile_cmd, qlConfig("decode_savedir"))
 
         ql_cmd = f"codeql database create {db_path} --language=java --source-root=\"{source}\" --command=\"{db_cmd}\" --overwrite"
         if platform.system() == "Darwin":
