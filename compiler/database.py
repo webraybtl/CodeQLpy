@@ -230,7 +230,7 @@ def createDir(source, compiled, version, jars):
                     continue
                 if relative_path.startswith("/") or relative_path.startswith("\\"):
                     relative_path = relative_path[1:]
-                copyFile(java_file, os.path.join(qlConfig("decode_savedir"), relative_path))
+                copyFile(java_file, os.path.join(qlConfig("decode_savedir"), "classes", relative_path))
 
         # 对反编译中异常的java文件进行自动修复
         clearJava(qlConfig("decode_savedir"))
