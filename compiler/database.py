@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 import shutil
 import codeql
@@ -192,9 +193,11 @@ def createDir(source, compiled, version, jars):
                 srcpath = str(jar_file)
                 if not checkJar(srcpath):
                     continue
-                if os.path.basename(jar_file) in jars:
-                    save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
-                    javaDecompile(jar_file, save_dir)
+
+                for jar in jars:
+                    if os.path.basename(jar_file) == jar or re.compile(jar).search(os.path.basename(jar_file)):
+                        save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
+                        javaDecompile(jar_file, save_dir)
                 destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
                 copyFile(srcpath, destpath)
 
@@ -293,9 +296,10 @@ def createWar(source, compiled, version, jars):
             srcpath = str(jar_file)
             if not checkJar(srcpath):
                 continue
-            if os.path.basename(jar_file) in jars:
-                save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
-                javaDecompile(jar_file, save_dir)
+            for jar in jars:
+                if os.path.basename(jar_file) == jar or re.compile(jar).search(os.path.basename(jar_file)):
+                    save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
+                    javaDecompile(jar_file, save_dir)
             destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
             copyFile(srcpath, destpath)
 

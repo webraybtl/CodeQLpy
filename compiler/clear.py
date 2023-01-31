@@ -54,14 +54,17 @@ def clearTLD(target_dir):
     for jsp_file in getFilesFromPath(target_dir, "jsp"):
         error_flag = False
         content = ""
-        with open(jsp_file, 'r', errors='ignore') as r:
+        with open(jsp_file, 'rb') as r:
             content = r.read()
-            if re.compile(r"<%@\s+taglib.*?uri=\".*?\.tld\".*?%>").findall(content):
-                content = re.compile(r"<%@\s+taglib.*?uri=\".*?\.tld\".*?%>").sub("", content)
+            for prefix in re.compile(rb'''<%@\s+taglib.*?uri=\".*?\.tld\".*?prefix=\"(.*?)\".*?%>''').findall(content):
+                content = content.replace(prefix + b":", b"")
+
+            if re.compile(rb'''<%@\s+taglib.*?uri=\".*?\.tld\".*?%>''').findall(content):
+                content = re.compile(rb'''<%@\s+taglib.*?uri=\".*?\.tld\".*?%>''').sub(b"", content)
                 error_flag = True
 
         if error_flag:
-            with open(jsp_file, 'w') as w:
+            with open(jsp_file, 'wb') as w:
                 w.write(content)
 
         
@@ -70,6 +73,6 @@ def clearJava(target_dir):
     repairNoneDeclare(target_dir)
 
 def clearSource(target_dir):
-    # clearTLD(target_dir)
+    clearTLD(target_dir)
     pass
 

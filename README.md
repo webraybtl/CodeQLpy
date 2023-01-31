@@ -18,7 +18,7 @@ CodeQLpy是一款基于CodeQL实现的自动化代码审计工具，目前仅支
 
 -v: 指定待扫描的源码对应的jdk版本，默认是jdk8
 
--j: 指定源码中需要额外编译的jar包，用法例如：oa1.jar,oa2.jar
+-j: 指定源码中需要额外编译的jar包，用于步骤一，用法例如：oa1.jar,oa2.jar。支持通过正则的方式指定包名，例如oa.*?\.jar
 
 ## 安装准备
 
@@ -116,3 +116,5 @@ lgtm要求分析的源码一定是编译前的源码，而且其包含的插件�
 案例二，[若依RuoYi测试用例](https://github.com/webraybtl/StudyCodeQLpy/tree/main/ruoyi_demo)
 
 案例三，[SpringMVC测试用例](https://github.com/webraybtl/StudyCodeQLpy/tree/main/springmvc_demo)
+## 联系作者
+如果有任何疑问，联系作者微信@ppdevxin
