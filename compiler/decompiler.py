@@ -38,8 +38,8 @@ def javaDecompile(filepath, save_dir):
 
         if not os.path.isdir(save_dir):
             os.makedirs(save_dir)
+        print("decoding {}...".format(filepath))
         args = f" -jar {toolpath} --outputDir {save_dir} {filepath}"
-        print(args)
         execJar(args, 11)
 
 

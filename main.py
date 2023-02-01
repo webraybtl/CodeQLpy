@@ -24,6 +24,7 @@ if __name__ == "__main__":
     args = argparse.ArgumentParser()
     args.add_argument('-d', '--database', type=str, help='CodeQL database dir of target project')
     args.add_argument('-t', '--target', type=str, help='Target CodeSource')
+    args.add_argument('-r', '--root', type=str, help='Target webroot path')
     args.add_argument('-c', '--compiled', action="store_true", help='Target CodeSource is compiled')
     args.add_argument('-s', '--skip', action="store_true", help='Skip checking environment')
     args.add_argument('-v', '--version', type=int, default=8, help='Target Source Code JDK version')
@@ -60,6 +61,8 @@ if __name__ == "__main__":
             color_print.error("Target path does not allow blank space")
             sys.exit()
 
+        if not parse_args.root:
+            parse_args.root = parse_args.target
         target_type = checkTarget(parse_args.target)
         if not target_type:
             color_print.error("Target Error")
@@ -68,7 +71,7 @@ if __name__ == "__main__":
         if version not in [6,7,8,11, ]:
             version = 8
         # 通过源码创建数据库
-        createDB(parse_args.target, parse_args.compiled, version, parse_args.jar)
+        createDB(parse_args.target, parse_args.compiled, version, parse_args.jar, parse_args.root)
 
 
 

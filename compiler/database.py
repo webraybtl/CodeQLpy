@@ -83,7 +83,7 @@ def createJar(source, compiled, version):
     else:
         log.error("Decompile error")
 
-def createDir(source, compiled, version, jars):
+def createDir(source, compiled, version, jars, root_path):
     # 处理未编译的源代码，生成数据库
     if not compiled:
         java_files = list(getFilesFromPath(source, "java"))
@@ -173,7 +173,7 @@ def createDir(source, compiled, version, jars):
         clearSource(source)
 
         java_files = list(getFilesFromPath(source, "java"))
-        jsp_files  = list(getFilesFromPath(source, "jsp"))
+        jsp_files  = list(getFilesFromPath(root_path, "jsp"))
         jar_files  = list(getFilesFromPath(source, "jar"))
 
         # WEB-INF目录中的jsp文件不能直接访问，对其进行过滤
@@ -183,7 +183,7 @@ def createDir(source, compiled, version, jars):
         if len(jsp_files) <= 0:
             log.error("Target SourceCode doesn't found any jsp file,exit")
             sys.exit()
-        if not os.path.isfile(os.path.join(source, "WEB-INF/web.xml")):
+        if not os.path.isfile(os.path.join(root_path, "WEB-INF/web.xml")):
             log.error("Target SourceCode doesn't have WEB-INF/web.xml file,exit")
             sys.exit()
 
@@ -195,7 +195,7 @@ def createDir(source, compiled, version, jars):
                     continue
 
                 for jar in jars:
-                    if os.path.basename(jar_file) == jar or re.compile(jar).search(os.path.basename(jar_file)):
+                    if os.path.basename(jar_file) == jar or re.compile("^{}$".format(jar)).search(os.path.basename(jar_file)):
                         save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
                         javaDecompile(jar_file, save_dir)
                 destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
@@ -204,7 +204,7 @@ def createDir(source, compiled, version, jars):
         # 处理jsp文件，反编译成java文件，并保存在待编译目录
         if len(jsp_files) > 0:
             log.info(f"Found {len(jsp_files)} jsp files to decode")
-            jspDecompileFiles(jsp_files, source)
+            jspDecompileFiles(jsp_files, root_path)
             convert_jsp_files = list(getFilesFromPath(os.path.join(qlConfig("decode_savedir"), "org/apache/jsp"), "java"))
             log.warning(f"Decode jsp file {len(convert_jsp_files)}/{len(jsp_files)} success ")
             if len(convert_jsp_files) <= 0:
@@ -218,11 +218,11 @@ def createDir(source, compiled, version, jars):
                     copyFile(srcpath, destpath)
 
         # 处理WEB-INF/classes中的源码文件
-        if os.path.isdir(os.path.join(source, "WEB-INF/classes")):
+        if os.path.isdir(os.path.join(root_path, "WEB-INF/classes")):
             save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
             # 对class文件进行反编译
             color_print.info("Start decoding WEB-INF/classes...")
-            javaDecompile(os.path.join(source, "WEB-INF/classes"), save_dir)
+            javaDecompile(os.path.join(root_path, "WEB-INF/classes"), save_dir)
 
         # 处理代码中的.java源码文件
         if len(java_files) > 0:
@@ -297,7 +297,7 @@ def createWar(source, compiled, version, jars):
             if not checkJar(srcpath):
                 continue
             for jar in jars:
-                if os.path.basename(jar_file) == jar or re.compile(jar).search(os.path.basename(jar_file)):
+                if os.path.basename(jar_file) == jar or re.compile("^{}$".format(jar)).search(os.path.basename(jar_file)):
                     save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
                     javaDecompile(jar_file, save_dir)
             destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
@@ -378,7 +378,7 @@ def createWar(source, compiled, version, jars):
 
 
 # 根据不同类型的源码进行处理
-def createDB(source, compiled, version, jar_list):
+def createDB(source, compiled, version, jar_list, root_path):
     # 清除历史保存的源码数据
     for path in os.listdir(qlConfig("decode_savedir")):
         c_path = os.path.join(qlConfig("decode_savedir"), path)
@@ -403,7 +403,7 @@ def createDB(source, compiled, version, jar_list):
             log.error("Unsupport source code")
             sys.exit()
     elif os.path.isdir(source):
-        return createDir(source, compiled, version, jars)
+        return createDir(source, compiled, version, jars, root_path)
     else:
         log.error("SourceCode is not exists")
         sys.exit()
