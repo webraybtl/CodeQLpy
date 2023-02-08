@@ -53,6 +53,7 @@ def jspDecompile(filepath, webroot, number):
     filepath = str(filepath)
     filename = filepath[len(webroot):]
     print("processing {}".format(number))
+    webroot = webroot.replace("\\", "\\\\")
     args = f" -jar {toolpath} \"{webroot}\" \"{filename}\" {decompile_dir}"
     execJar(args, 11)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import re,random
+import os,re,random
 from utils.functions        import *
 
 # 部分源码在反编译之后会出现package包名不正确的情况进行修复
@@ -14,6 +14,8 @@ def clearPackage(target_dir):
         b"package src.main.java.": b"package ",
     }
     for java_file in getFilesFromPath(target_dir, "java"):
+        if not os.path.isfile(java_file):
+            continue
         error_flag = False
         content = ""
         with open(java_file, 'rb') as r:
@@ -29,6 +31,8 @@ def clearPackage(target_dir):
 # 修复部分反编译之后的字段名称无初始化定义，eg:LineInputStream lineInputStream;
 def repairNoneDeclare(target_dir):
     for java_file in getFilesFromPath(target_dir, "java"):
+        if not os.path.isfile(java_file):
+            continue
         error_flag = False
         content = ""
         with open(java_file, 'rb') as r:
@@ -51,6 +55,8 @@ def repairKeyPrivateFunction(target_dir):
     instanceof,int,interface,long,native,new,package,private,protected,public,return,strictfp,\
     short,static,super,switch,synchronized,this,throw,throws,transient,try,void,volatile,while"
     for java_file in getFilesFromPath(target_dir, "java"):
+        if not os.path.isfile(java_file):
+            continue
         error_flag = False
         content = ""
         with open(java_file, 'rb') as r:
@@ -99,6 +105,8 @@ def clearTLD(target_dir):
     # 老版本的代码中出现的tld引用在新版中不支持，需要去除tld引入
     # <%@ taglib uri="/WEB-INF/tags/convert.tld" prefix="f"%>
     for jsp_file in getFilesFromPath(target_dir, "jsp"):
+        if not os.path.isfile(jsp_file):
+            continue
         error_flag = False
         content = ""
         with open(jsp_file, 'rb') as r:
