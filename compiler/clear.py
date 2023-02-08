@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import time
 import os,re,random
 from utils.functions        import *
 
@@ -97,6 +98,36 @@ def repairKeyPrivateFunction(target_dir):
             with open(java_file, 'wb') as w:
                 w.write(content)
 
+# 部分代码在反编译之后会出现相同类名的情况
+def clearDuplicateClass(target_dir):
+    for java_file in getFilesFromPath(target_dir, "java"):
+        if not os.path.isfile(java_file):
+            continue
+        error_flag = False
+        content = ""
+        with open(java_file, 'rb') as r:
+            content = r.read()
+            while True:
+                classes = []
+                flag = False
+                for child_class in re.compile(rb"((?: +)(?:public|private|protected) (?:static )?class (\w+) )").findall(content):
+                    if child_class[0] not in classes:
+                        classes.append(child_class[0])
+                    else:
+                        rand_num = str(random.randint(1000,9999)).encode()
+                        new_child_class = child_class[0].replace(child_class[1], child_class[1] + rand_num)
+                        content = content.replace(child_class[0], new_child_class, 1)
+                        flag = True
+                        error_flag = True
+                        break
+
+                if not flag:
+                    break
+        if error_flag:
+            with open(java_file, 'wb') as w:
+                w.write(content)
+            
+
 # 修复编码问题导致的编译异常
 def clearCodingError(target_dir):
     pass
@@ -125,6 +156,7 @@ def clearTLD(target_dir):
         
 def clearJava(target_dir):
     clearPackage(target_dir)
+    clearDuplicateClass(target_dir)
     repairNoneDeclare(target_dir)
     repairKeyPrivateFunction(target_dir)
 
