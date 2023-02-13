@@ -14,16 +14,18 @@ class FileWriteSink extends DataFlow::Node {
 }
 
 predicate isTaintedString(Expr expSrc, Expr expDest) {
-    exists(MethodAccess ma | expDest = ma and 
+    exists(MethodAccess ma | 
+      ma = expDest and
+      ma.getMethod().getName() = "parseRequest" and
+      ma.getArgument(0) = expSrc
+    )
+    or
+    exists(MethodAccess ma | 
       ma.getQualifier() = expSrc and
-      ma.getMethod().getName() = "getName" and
-      ma.getMethod().getDeclaringType().hasQualifiedName("org.apache.commons.fileupload", "FileItem")
-    ) or
-    exists(MethodAccess ma | expDest = ma and 
-        ma.getArgument(0) = expSrc and
-        ma.getMethod().getName() = "parseRequest" and
-        ma.getMethod().getDeclaringType().hasQualifiedName("org.apache.commons.fileupload.servlet", "ServletFileUpload")
-      )
+      ma.getMethod().getName().substring(0, 3) = "get" and
+      ma.getMethod().getDeclaringType().hasQualifiedName("org.apache.commons.fileupload", "FileItem") and 
+      ma = expDest
+    )
   }
 
 class FileWriteConfig extends TaintTracking::Configuration {
