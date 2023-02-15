@@ -65,6 +65,8 @@ def copyFile(srcpath, destpath):
     if not os.path.isfile(srcpath):
         log.error(f"{srcpath} is not exists")
         return False
+    if os.path.isfile(destpath):
+        return False
     shutil.copy(srcpath, destpath)
 
 def copyJavaFile(srcpath, destpath):

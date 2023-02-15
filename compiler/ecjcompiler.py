@@ -46,6 +46,36 @@ def filterClass(java_path):
             return False
     return True
 
+# 对源码中依赖的jar包进行判断，自动识别可能缺少的包
+def autoCheckJar():
+    class_path = os.path.join(qlConfig("decode_savedir"), "classes")
+    jar_path = os.path.join(qlConfig("decode_savedir"), "lib")
+    has_springmvc_flag = False
+    has_common_flag = False
+    has_jdk_flag = True
+    has_tomcat_falg = True
+    for java_file in getFilesFromPath(class_path, "java"):
+        with open(java_file, 'rb') as r:
+            content = r.read()
+            if b"org.apache.commons." in content:
+                has_common_flag = True
+            if b"org.springframework." in content:
+                has_springmvc_flag = True
+        if has_springmvc_flag and has_common_flag:
+            break
+    for jar_file in dirFiles(jar_path):
+        if "spring-" in jar_file.lower():
+            has_springmvc_flag = False
+        if "commons-" in jar_file.lower():
+            has_common_flag = False
+        if "charsets.jar" in jar_file.lower():
+            has_jdk_flag = False
+        if "tomcat-" in jar_file.lower():
+            has_tomcat_falg = False
+
+    return has_springmvc_flag, has_common_flag, has_jdk_flag, has_tomcat_falg
+
+
 # 生成最终在codeql中使用的编译命令
 def generate(command, save_path):
     cmd_path = ""
@@ -142,12 +172,22 @@ def ecjcompileE(save_path, target_version):
                     all_java_files.append(java_path)
 
     jar_args = " "
+    jar_path = []
     if os.path.isdir(os.path.join(save_path, "lib")):
+        jar_path.append(os.path.join(save_path, "lib"))
+
+    has_springmvc_flag, has_common_flag,has_jdk_flag, has_tomcat_falg = autoCheckJar()
+    if has_springmvc_flag: jar_path.append("lib/spring_mvc_lib")
+    if has_common_flag: jar_path.append("lib/common_lib")
+    if has_jdk_flag: jar_path.append("lib/java{}_lib".format(target_version))
+    if has_tomcat_falg: jar_path.append("lib/tomcat_lib")
+
+    if len(jar_path) > 0:
         if platform.system() == "Windows":
             split_quote = ";"
         else:
             split_quote = ":"
-        jar_args += " -extdirs \"{}{}{}\"".format(os.path.join(save_path, "lib"), split_quote, "lib/java{}_lib".format(target_version))
+        jar_args += " -extdirs \"{}\"".format(split_quote.join(jar_path))
 
     if os.path.isdir(os.path.join(save_path, "classes")):
         jar_args += " -sourcepath " + os.path.join(save_path, "classes")

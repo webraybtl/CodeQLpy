@@ -194,12 +194,15 @@ def createDir(source, compiled, version, jars, root_path):
                 if not checkJar(srcpath):
                     continue
 
+                flag = True
                 for jar in jars:
                     if os.path.basename(jar_file) == jar or re.compile("^{}$".format(jar)).search(os.path.basename(jar_file)):
                         save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
                         javaDecompile(jar_file, save_dir)
-                destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
-                copyFile(srcpath, destpath)
+                        flag = False
+                if flag:
+                    destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
+                    copyFile(srcpath, destpath)
 
         # 处理jsp文件，反编译成java文件，并保存在待编译目录
         if len(jsp_files) > 0:
@@ -210,12 +213,12 @@ def createDir(source, compiled, version, jars, root_path):
             if len(convert_jsp_files) <= 0:
                 log.error(f"Auto decompiler error, no java file found.")
                 sys.exit()
-            else:
-                # 因为jsp文件编译需要用到tomcat lib目录的jar包，需要把jar包拷贝一份
-                for tomcat_jar in dirFiles(qlConfig("tomcat_jar")):
-                    srcpath = os.path.join(qlConfig("tomcat_jar"), tomcat_jar)
-                    destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath)) 
-                    copyFile(srcpath, destpath)
+            # else:
+            #     # 因为jsp文件编译需要用到tomcat lib目录的jar包，需要把jar包拷贝一份
+            #     for tomcat_jar in dirFiles(qlConfig("tomcat_jar")):
+            #         srcpath = os.path.join(qlConfig("tomcat_jar"), tomcat_jar)
+            #         destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath)) 
+            #         copyFile(srcpath, destpath)
 
         # 处理WEB-INF/classes中的源码文件
         if os.path.isdir(os.path.join(root_path, "WEB-INF/classes")):
@@ -234,9 +237,9 @@ def createDir(source, compiled, version, jars, root_path):
                 if relative_path.startswith("/") or relative_path.startswith("\\"):
                     relative_path = relative_path[1:]
                 copyFile(java_file, os.path.join(qlConfig("decode_savedir"), "classes", relative_path))
-
+        
         # 对反编译中异常的java文件进行自动修复
-        clearJava(qlConfig("decode_savedir"))
+        clearJava(list(getFilesFromPath(qlConfig("decode_savedir"), "java")))
 
         compile_cmd = ecjcompileE(qlConfig("decode_savedir"), version)
         source_split = source.replace("\\", "/").split("/")
@@ -296,12 +299,15 @@ def createWar(source, compiled, version, jars):
             srcpath = str(jar_file)
             if not checkJar(srcpath):
                 continue
+            flag = True
             for jar in jars:
                 if os.path.basename(jar_file) == jar or re.compile("^{}$".format(jar)).search(os.path.basename(jar_file)):
                     save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
                     javaDecompile(jar_file, save_dir)
-            destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
-            copyFile(srcpath, destpath)
+                    flag = False
+            if flag:
+                destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
+                copyFile(srcpath, destpath)
 
     # 处理jsp文件，反编译成java文件，并保存在待编译目录
     if len(jsp_files) > 0:
@@ -317,12 +323,12 @@ def createWar(source, compiled, version, jars):
         if len(convert_jsp_files) <= 0:
             log.error(f"Auto decompiler error, no java file found.")
             sys.exit()
-        else:
-            # 因为jsp文件编译需要用到tomcat lib目录的jar包，需要把jar包拷贝一份
-            for tomcat_jar in dirFiles(qlConfig("tomcat_jar")):
-                srcpath = os.path.join(qlConfig("tomcat_jar"), tomcat_jar)
-                destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath)) 
-                copyFile(srcpath, destpath)
+        # else:
+        #     # 因为jsp文件编译需要用到tomcat lib目录的jar包，需要把jar包拷贝一份
+        #     for tomcat_jar in dirFiles(qlConfig("tomcat_jar")):
+        #         srcpath = os.path.join(qlConfig("tomcat_jar"), tomcat_jar)
+        #         destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath)) 
+        #         copyFile(srcpath, destpath)
 
     # 处理WEB-INF/classes中的源码文件
     if os.path.isdir(os.path.join(source_path, "WEB-INF/classes")):

@@ -6,7 +6,7 @@ import os,re,random
 from utils.functions        import *
 
 # 部分源码在反编译之后会出现package包名不正确的情况进行修复
-def clearPackage(target_dir):
+def clearPackage(java_files):
     error_packages = {
         b"package BOOT-INF.classes.": b"package ",
         b"package WEB-INF.classes.": b"package ",
@@ -14,7 +14,7 @@ def clearPackage(target_dir):
         b"package BOOT-INF.classes;": b"",
         b"package src.main.java.": b"package ",
     }
-    for java_file in getFilesFromPath(target_dir, "java"):
+    for java_file in java_files:
         if not os.path.isfile(java_file):
             continue
         error_flag = False
@@ -30,8 +30,8 @@ def clearPackage(target_dir):
                 w.write(content)
 
 # 修复部分反编译之后的字段名称无初始化定义，eg:LineInputStream lineInputStream;
-def repairNoneDeclare(target_dir):
-    for java_file in getFilesFromPath(target_dir, "java"):
+def repairNoneDeclare(java_files):
+    for java_file in java_files:
         if not os.path.isfile(java_file):
             continue
         error_flag = False
@@ -50,12 +50,12 @@ def repairNoneDeclare(target_dir):
                 w.write(content)
 
 # 修复混淆代码中方法和属性为关键字的情况
-def repairKeyPrivateFunction(target_dir):
+def repairKeyPrivateFunction(java_files):
     java_keys = b"abstract,assert,boolean,break,byte,case,catch,char,class,const,continue,\
     default,do,double,else,enum,extends,final,finally,float,for,goto,if,implements,import,\
     instanceof,int,interface,long,native,new,package,private,protected,public,return,strictfp,\
     short,static,super,switch,synchronized,this,throw,throws,transient,try,void,volatile,while"
-    for java_file in getFilesFromPath(target_dir, "java"):
+    for java_file in java_files:
         if not os.path.isfile(java_file):
             continue
         error_flag = False
@@ -99,8 +99,8 @@ def repairKeyPrivateFunction(target_dir):
                 w.write(content)
 
 # 部分代码在反编译之后会出现相同类名的情况
-def clearDuplicateClass(target_dir):
-    for java_file in getFilesFromPath(target_dir, "java"):
+def clearDuplicateClass(java_files):
+    for java_file in java_files:
         if not os.path.isfile(java_file):
             continue
         error_flag = False
@@ -123,6 +123,41 @@ def clearDuplicateClass(target_dir):
 
                 if not flag:
                     break
+        if error_flag:
+            with open(java_file, 'wb') as w:
+                w.write(content)
+
+# 修复重复定义字段
+def clearDuplicateDeclare(java_files):
+    for java_file in java_files:
+        if not os.path.isfile(java_file):
+            continue
+        error_flag = False
+        content = ""
+        with open(java_file, 'rb') as r:
+            content = r.read()
+            if re.compile(rb" (\w+) = \1;").search(content):
+                error_flag = True
+                content = re.compile(rb"(, (\w+) = \2;)").sub(rb' ;',content)
+        if error_flag:
+            with open(java_file, 'wb') as w:
+                w.write(content)
+
+# 修复final字段重复定义
+def repairFinalField(java_files):
+    for java_file in java_files:
+        if not os.path.isfile(java_file):
+            continue
+        error_flag = False
+        content = ""
+
+        with open(java_file, 'rb') as r:
+            content = r.read()
+            for t in re.compile(rb"(?:private|public|protected) final \w+ (\w+) = ").findall(content):
+                if b"this." + t + b" = " in content:
+                    content = re.compile(rb"(private|public|protected) final (\w+) (\w+) = ").sub(rb"\1 \2 \3 = ",content)
+                    error_flag = True
+
         if error_flag:
             with open(java_file, 'wb') as w:
                 w.write(content)
@@ -154,11 +189,14 @@ def clearTLD(target_dir):
                 w.write(content)
 
         
-def clearJava(target_dir):
-    clearPackage(target_dir)
-    clearDuplicateClass(target_dir)
-    repairNoneDeclare(target_dir)
-    repairKeyPrivateFunction(target_dir)
+def clearJava(target_files):
+    clearPackage(target_files)
+    clearDuplicateClass(target_files)
+    clearDuplicateDeclare(target_files)
+    repairNoneDeclare(target_files)
+    repairKeyPrivateFunction(target_files)
+    repairFinalField(target_files)
+
 
 def clearSource(target_dir):
     clearTLD(target_dir)
