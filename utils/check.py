@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import uuid
 import tempfile
 from utils.log       import log
@@ -42,8 +43,14 @@ def check_codeql():
         return False
     return True
 
+def check_codeqlpy():
+    if not re.compile(r"^[a-zA-Z0-9\-_\(\)\[\]\.\\/:]+$").search(os.getcwd()):
+        log.error("CodeQLpy path should not have special charactor or chinese words.")
+        return False
+    return True
+
 def checkEnv():
-    return check_codeql() and check_maven()
+    return check_codeql() and check_maven() and check_codeqlpy()
 
 def checkDB(database):
     if not os.path.isdir(database):
@@ -61,10 +68,9 @@ def checkTarget(target):
     if not os.path.exists(target):
         log.error("Target is not exists")
         return False
-    # if len(list(getFilesFromPath(target, 'class'))) > 0:
-    #     return 'class'
-    # if len(list(getFilesFromPath(target, 'java'))) > 0:
-    #     return 'java'
+    if not re.compile(r"^[a-zA-Z0-9\-_\(\)\[\]\.\\/:]+$").search(target):
+        log.error("Target path should not have special charactor or chinese words.")
+        return False
     return True
 
 if __name__ == "__main__":

@@ -67,6 +67,7 @@ if __name__ == "__main__":
         if not target_type:
             color_print.error("Target Error")
             sys.exit()
+        color_print.info("Environment Check Success, start to init database.")
         version = parse_args.version
         if version not in [6,7,8,11, ]:
             version = 8
