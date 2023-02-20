@@ -32,6 +32,7 @@ def clearPackage(java_files):
 # 修复部分反编译之后的字段名称无初始化定义，eg:LineInputStream lineInputStream;
 def repairNoneDeclare(java_files):
     for java_file in java_files:
+        # java_file = java_files
         if not os.path.isfile(java_file):
             continue
         error_flag = False
@@ -40,9 +41,14 @@ def repairNoneDeclare(java_files):
             content = r.read()
             imports = re.compile(rb"import (?:\w+\.)+(\w+)").findall(content)
             for delaration in re.compile(rb'\s*(\w+)\s+\w+\s*;').findall(content):
-                black_list = ['return', 'int', 'char', 'boolean', 'String', 'throw', 'float', ]
+                black_list = ['return', 'int', 'char', 'boolean', 'String', 'throw', 'float', 'byte', ]
                 if delaration != "" and delaration not in black_list and delaration in imports:
                     content = re.compile(b'(\\s*' + delaration + b'\\s+\\w+\\s*);').sub(rb'\1' + b' = null;', content)
+                    error_flag = True
+            for delaration in re.compile(rb'\s*(\w+)\[\]\s+\w+\s*;').findall(content):
+                black_list = ['return', 'int', 'char', 'boolean', 'String', 'throw', 'float', 'byte', ]
+                if delaration != "" and delaration not in black_list and delaration in imports:
+                    content = re.compile(b'(\\s*' + delaration + b'\\[\\]\\s+\\w+\\s*);').sub(rb'\1' + b' = null;', content)
                     error_flag = True
         
         if error_flag:
@@ -161,6 +167,25 @@ def repairFinalField(java_files):
         if error_flag:
             with open(java_file, 'wb') as w:
                 w.write(content)
+
+# 修复变量名是null的错误
+def repairNoneVariable(java_files):
+    for java_file in java_files:
+        if not os.path.isfile(java_file):
+            continue
+        error_flag = False
+        content = ""
+
+        with open(java_file, 'rb') as r:
+            content = r.read()
+            if re.compile(rb"\s+\w+ null = ").search(content):
+                rand_num = str(random.randint(1000,9999)).encode()
+                content = re.compile(rb"(\s+\w+ )null = ").sub(rb"\1" + b"null" + rand_num + b" = ", content)
+                error_flag = True
+
+        if error_flag:
+            with open(java_file, 'wb') as w:
+                w.write(content)
             
 
 # 修复编码问题导致的编译异常
@@ -193,9 +218,10 @@ def clearJava(target_files):
     clearPackage(target_files)
     clearDuplicateClass(target_files)
     clearDuplicateDeclare(target_files)
-    repairNoneDeclare(target_files)
+    # repairNoneDeclare(target_files)
     repairKeyPrivateFunction(target_files)
     repairFinalField(target_files)
+    repairNoneVariable(target_files)
 
 
 def clearSource(target_dir):

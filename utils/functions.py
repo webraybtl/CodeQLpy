@@ -87,7 +87,7 @@ def copyJavaFile(srcpath, destpath):
 def execute(cmd):
     try:
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
-        proc.wait(timeout=120)
+        proc.wait(timeout=240)
         if platform.system() == "Windows":
             encoding = "gbk"
         else:
