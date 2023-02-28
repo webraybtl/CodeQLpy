@@ -278,6 +278,9 @@ def createWar(source, compiled, version, jars):
     source_path = os.path.join(qlConfig("decode_savedir"), "website")
     javaDecompile(source, source_path)
 
+    # 对源码中不兼容数据进行清洗
+    clearSource(source_path)
+
     java_files = list(getFilesFromPath(qlConfig("decode_savedir"), "java"))
     jsp_files  = list(getFilesFromPath(qlConfig("decode_savedir"), "jsp"))
     jar_files  = list(getFilesFromPath(qlConfig("decode_savedir"), "jar"))
@@ -351,7 +354,7 @@ def createWar(source, compiled, version, jars):
             copyFile(java_file, os.path.join(qlConfig("decode_savedir"), 'classes', relative_path))
 
     # 对反编译中异常的java文件进行自动修复
-    clearJava(qlConfig("decode_savedir"))
+    clearJava(list(getFilesFromPath(qlConfig("decode_savedir"), "java")))
 
     compile_cmd = ecjcompileE(qlConfig("decode_savedir"), version)
     source_split = source.replace("\\", "/").split("/")

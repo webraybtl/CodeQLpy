@@ -202,11 +202,12 @@ def clearTLD(target_dir):
         content = ""
         with open(jsp_file, 'rb') as r:
             content = r.read()
-            for prefix in re.compile(rb'''<%@\s+taglib.*?uri=\".*?\.tld\".*?prefix=\"(.*?)\".*?%>''').findall(content):
+            for prefix in re.compile(rb'''(?:<%@\s*taglib.*?uri=\".*?\".*?prefix=\"(.*?)\".*?%>|<%@\s*taglib.*?prefix=\"(.*?)\".*?uri=\".*?\".*?%>)''').findall(content):
+                prefix = prefix[1] if prefix[0] == b"" else prefix[0]
                 content = content.replace(prefix + b":", b"")
 
-            if re.compile(rb'''<%@\s+taglib.*?uri=\".*?\.tld\".*?%>''').findall(content):
-                content = re.compile(rb'''<%@\s+taglib.*?uri=\".*?\.tld\".*?%>''').sub(b"", content)
+            if re.compile(rb'''<%@\s*taglib.*?uri=\".*?\".*?%>''').search(content):
+                content = re.compile(rb'''<%@\s*taglib.*?uri=\".*?\".*?%>''').sub(b"", content)
                 error_flag = True
 
         if error_flag:
