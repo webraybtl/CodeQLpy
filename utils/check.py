@@ -11,7 +11,7 @@ from utils.functions import *
 
 def checkQL(database):
     if not os.path.isdir(qlConfig("qlpath")):
-        log.error("qlpath is not exists, check it at config/config.ini")
+        log.error("qlpath is not exists, check it at config/config.ini。qlpath not need quote characters.")
         return False
 
     # 生成临时的ql查询文件
@@ -26,7 +26,7 @@ def checkQL(database):
     if "Hello World" in content:
         return True
     else:
-        log.error("database error or qlpath is not correct, check the qlpack.yml file exists. For example ~/CodeQL/ql/java/ql/test/.")
+        log.error("database or codeql is error.")
         return False
 
 def check_maven():

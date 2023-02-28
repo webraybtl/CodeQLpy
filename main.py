@@ -49,7 +49,7 @@ if __name__ == "__main__":
             sys.exit()
 
         if not checkQL(parse_args.database):
-            color_print.error("qlpath error,check it at config/config.ini")
+            color_print.error("qlpath error,check it at config/config.ini or close the Visual Studio Code.")
             sys.exit()
 
         color_print.info("Environment Check Success, start to scan database.")
