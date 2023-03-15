@@ -186,6 +186,28 @@ def repairNoneVariable(java_files):
         if error_flag:
             with open(java_file, 'wb') as w:
                 w.write(content)
+
+# 修复引入相同类名的bug
+def clearDuplicateImport(java_files):
+    for java_file in java_files:
+        if not os.path.isfile(java_file):
+            continue
+        error_flag = False
+        content = ""
+
+        with open(java_file, 'rb') as r:
+            content = r.read()
+            imports = []
+            for imp in re.compile(rb"(\bimport (?:\w+\.)+(\w+);)").findall(content):
+                if imp[1] not in imports:
+                    imports.append(imp[1])
+                else:
+                    content = content.replace(imp[0], b' ')
+                    error_flag = True
+
+        if error_flag:
+            with open(java_file, 'wb') as w:
+                w.write(content)
             
 
 # 修复编码问题导致的编译异常
@@ -219,6 +241,7 @@ def clearJava(target_files):
     clearPackage(target_files)
     clearDuplicateClass(target_files)
     clearDuplicateDeclare(target_files)
+    clearDuplicateImport(target_files)
     # repairNoneDeclare(target_files)
     repairKeyPrivateFunction(target_files)
     repairFinalField(target_files)
