@@ -19,7 +19,7 @@ from compiler.clear         import *
 from compiler.maven         import transform
 
 
-def createJar(source, compiled, version):
+def createJar(source, compiled, version, jars):
     if not compiled:
         log.error("SpringBoot jar project is compiled, using --compiled argument instead.")
         sys.exit()
@@ -50,15 +50,22 @@ def createJar(source, compiled, version):
             destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath)) 
             copyFile(srcpath, destpath)
 
-        # 处理本身依赖的jar包
+        # 处理jar包的问题, 把jar包都拷贝到lib目录集中处理
         if len(jar_files) > 0:
-            log.info(f"Found {len(jar_files)} jar files to include")
             for jar_file in jar_files:
                 srcpath = str(jar_file)
                 if not checkJar(srcpath):
                     continue
-                destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
-                copyFile(srcpath, destpath)
+
+                flag = True
+                for jar in jars:
+                    if os.path.basename(jar_file) == jar or re.compile("^{}$".format(jar)).search(os.path.basename(jar_file)):
+                        save_dir = os.path.join(qlConfig("decode_savedir"), "classes")
+                        javaDecompile(jar_file, save_dir)
+                        flag = False
+                if flag:
+                    destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
+                    copyFile(srcpath, destpath)
 
         # 通过ecj对反编译之后的代码进行编译
         compile_cmd = ecjcompileE(qlConfig("decode_savedir"), version)
@@ -405,7 +412,7 @@ def createDB(source, compiled, version, jar_list, root_path):
     # 开始创建数据库
     if os.path.isfile(source):
         if source.endswith(".jar"):
-            return createJar(source, compiled, version)
+            return createJar(source, compiled, version, jars)
         elif source.endswith(".war"):
             return createWar(source, compiled, version, jars)
         else:

@@ -79,17 +79,19 @@ def repairKeyPrivateFunction(java_files):
             for private_attribute_name in re.compile(rb"(?:public|private|protected) (?:static )?(?:final )?\w+(?:\[\])* (\w+) = ").findall(content):
                 if private_attribute_name in java_keys.split(b","):
                     rand_num = str(random.randint(1000,9999)).encode()
-                    ori_str = b" " + private_attribute_name + b" = "
-                    rep_str = b" " + private_attribute_name + rand_num + b" = "
-                    content = content.replace(ori_str, rep_str)
+                    if b" " + private_attribute_name + b" = " in content:
+                        ori_str = b" " + private_attribute_name + b" = "
+                        rep_str = b" " + private_attribute_name + rand_num + b" = "
+                        content = content.replace(ori_str, rep_str)
+                        error_flag = True
 
                     if  b"this." + private_attribute_name in content:
                         content = re.compile(rb"this\." + private_attribute_name + rb"(\W)").sub(rb'this.' + private_attribute_name + rand_num + rb'\1', content)
                         error_flag = True
 
                     if not private_attribute_name in b"byte,int,long,short,float".split(b","):
-                        if re.compile(rb"\W" + private_attribute_name + rb'(?:\.|\(|\[\w|;|\+|\-)').findall(content):
-                            content = re.compile(rb"(\W)" + private_attribute_name + rb'(\.|\(|\[\w|;|\+|\-)').sub(rb'\1' + private_attribute_name + rand_num + rb'\2', content)
+                        if re.compile(rb"\W" + private_attribute_name + rb'(?:\.|\(|\[\w|;|\+|\-| )').findall(content):
+                            content = re.compile(rb"(\W)" + private_attribute_name + rb'(\.|\(|\[\w|;|\+|\-| )').sub(rb'\1' + private_attribute_name + rand_num + rb'\2', content)
                             error_flag = True
                     else:
                         if re.compile(rb"\W" + private_attribute_name + rb'(?:\.|\(|;|\+|\-)').findall(content):
@@ -98,6 +100,33 @@ def repairKeyPrivateFunction(java_files):
 
                     if re.compile(rb"\w+\." + private_attribute_name + rb"\W+").search(content):
                         content = re.compile(rb"(\w+\.)" + private_attribute_name + rb'(\W+)').sub(rb'\1' + private_attribute_name + rand_num + rb'\2', content)
+                        error_flag = True
+
+            # 替换变量名
+            for variable_name in re.compile(rb" [a-zA-Z0-9]+ (\w+) = ").findall(content):
+                if variable_name in java_keys.split(b","):
+                    rand_num = str(random.randint(1000,9999)).encode()
+                    if b" " + variable_name + b" = " in content:
+                        ori_str = b" " + variable_name + b" = "
+                        rep_str = b" " + variable_name + rand_num + b" = " 
+                        content = content.replace(ori_str, rep_str)
+                        error_flag = True
+                    
+                    if  b"this." + variable_name in content:
+                        content = re.compile(rb"this\." + variable_name + rb"(\W)").sub(rb'this.' + variable_name + rand_num + rb'\1', content)
+                        error_flag = True
+
+                    if not variable_name in b"byte,int,long,short,float".split(b","):
+                        if re.compile(rb"\W" + variable_name + rb'(?:\.|\(|\[\w|;|\+|\-| )').findall(content):
+                            content = re.compile(rb"(\W)" + variable_name + rb'(\.|\(|\[\w|;|\+|\-| )').sub(rb'\1' + variable_name + rand_num + rb'\2', content)
+                            error_flag = True
+                    else:
+                        if re.compile(rb"\W" + variable_name + rb'(?:\.|\(|;|\+|\-)').findall(content):
+                            content = re.compile(rb"(\W)" + variable_name + rb'(\.|\(|;|\+|\-)').sub(rb'\1' + variable_name + rand_num + rb'\2', content)
+                            error_flag = True
+
+                    if re.compile(rb"\w+\." + variable_name + rb"\W+").search(content):
+                        content = re.compile(rb"(\w+\.)" + variable_name + rb'(\W+)').sub(rb'\1' + variable_name + rand_num + rb'\2', content)
                         error_flag = True
         
         if error_flag:
@@ -197,18 +226,21 @@ def clearDuplicateImport(java_files):
 
         with open(java_file, 'rb') as r:
             content = r.read()
-            imports = []
-            for imp in re.compile(rb"(\bimport (?:\w+\.)+(\w+);)").findall(content):
-                if imp[1] not in imports:
-                    imports.append(imp[1])
+            import_names = []
+            import_packages = []
+            for imp in re.compile(rb"(\bimport (?:\w+\.)+([\w\*]+);)").findall(content):
+                if imp[1] == b"*" and imp[0] not in import_packages:
+                    import_packages.append(imp[0])
+                elif imp[1] != b"*" and imp[1] not in import_names and imp[0] not in import_packages:
+                    import_names.append(imp[1])
+                    import_packages.append(imp[0])
                 else:
-                    content = content.replace(imp[0], b' ')
                     error_flag = True
-
-        if error_flag:
-            with open(java_file, 'wb') as w:
-                w.write(content)
-            
+            if error_flag and len(import_packages) > 0:
+                imports = b"\n".join(import_packages)
+                content = re.compile(rb"(\bimport (?:\w+\.)+([\w\*]+);\s+)+").sub(imports + b"\n\n", content)
+                with open(java_file, 'wb') as w:
+                    w.write(content)
 
 # 修复编码问题导致的编译异常
 def clearCodingError(target_dir):

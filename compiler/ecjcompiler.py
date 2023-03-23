@@ -64,13 +64,13 @@ def autoCheckJar():
         if has_springmvc_flag and has_common_flag:
             break
     for jar_file in dirFiles(jar_path):
-        if "spring-" in jar_file.lower():
+        if jar_file.lower().startswith("spring-"):
             has_springmvc_flag = False
-        if "commons-" in jar_file.lower():
+        if jar_file.lower().startswith("commons-"):
             has_common_flag = False
-        if "charsets.jar" in jar_file.lower():
+        if "charsets.jar" == jar_file.lower():
             has_jdk_flag = False
-        if "tomcat-" in jar_file.lower():
+        if jar_file.lower().startswith("tomcat-"):
             has_tomcat_falg = False
 
     return has_springmvc_flag, has_common_flag, has_jdk_flag, has_tomcat_falg
