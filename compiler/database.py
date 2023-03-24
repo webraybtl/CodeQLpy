@@ -39,7 +39,6 @@ def createJar(source, compiled, version, jars):
         if len(class_files) > 0:
             log.warning("There are {} class files".format(len(list(class_files))))
 
-        clearJava(qlConfig("decode_savedir"))
         # 处理代码中的.java源码文件
         if len(java_files) > 0:
             for java_file in java_files:
@@ -66,6 +65,8 @@ def createJar(source, compiled, version, jars):
                 if flag:
                     destpath = os.path.join(qlConfig("decode_savedir"), "lib", os.path.basename(srcpath))
                     copyFile(srcpath, destpath)
+
+        clearJava(list(getFilesFromPath(qlConfig("decode_savedir"), "java")))
 
         # 通过ecj对反编译之后的代码进行编译
         compile_cmd = ecjcompileE(qlConfig("decode_savedir"), version)
