@@ -33,6 +33,14 @@ def filterJava(java_path):
             if whilte_java in content:
                 return True
     return False
+# 如果路径中包含特殊字符会导致整个编译失败
+def filterJavaPath(java_path):
+    black_words = [" "]
+    java_path = str(java_path)
+    for black_word in black_words:
+        if black_word in java_path:
+            return False
+    return True
 
 # 某些特殊的类文件会导致编译异常
 # 1、内部类
@@ -152,7 +160,7 @@ def ecjcompileE(save_path, target_version):
         for java_path in pathlib.Path(save_path).glob('classes/**/*.java'):
             if filterPackage(java_path) and filterClass(java_path):
                 if filterJava(java_path):
-                    if java_path not in all_java_files:
+                    if java_path not in all_java_files and filterJavaPath(java_path):
                         f.write(str(java_path) + "\n")
                         all_java_files.append(java_path)
 
@@ -160,14 +168,14 @@ def ecjcompileE(save_path, target_version):
             for java_path in pathlib.Path(os.path.join(save_path, "org/apache/jsp")).glob('**/*.java'):
                 # if filterPackage(java_path) and filterClass(java_path):
                 if filterPackage(java_path):
-                    if filterJava(java_path) and java_path not in all_java_files:
+                    if filterJava(java_path) and java_path not in all_java_files and filterJavaPath(java_path):
                         f.write(str(java_path) + "\n")
                         all_java_files.append(java_path)
 
         for java_path in pathlib.Path(save_path).glob('classes/**/*.java'):
             if filterPackage(java_path) and filterClass(java_path):
                 # if filterJava(java_path) and java_path not in all_java_files:
-                if java_path not in all_java_files:
+                if java_path not in all_java_files and filterJavaPath(java_path):
                     f.write(str(java_path) + "\n")
                     all_java_files.append(java_path)
 
